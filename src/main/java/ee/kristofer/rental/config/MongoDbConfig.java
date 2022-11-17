@@ -14,6 +14,7 @@ import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
 
 @Configuration
 @PropertySource("classpath:application-localdev.properties")
+//TODO Can't detect correct properties file, find a solution
 public class MongoDbConfig extends AbstractMongoClientConfiguration {
     private static final Logger log = LogManager.getLogger(MongoDbConfig.class);
 

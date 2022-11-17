@@ -1,6 +1,5 @@
 package ee.kristofer.rental.config;
 
-import com.fasterxml.jackson.databind.ser.std.UUIDSerializer;
 import ee.kristofer.rental.model.Auth;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +10,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
 @PropertySource("classpath:application-localdev.properties")
+//TODO Can't detect correct properties file, find a solution
 public class RedisConfig {
 
     @Bean
