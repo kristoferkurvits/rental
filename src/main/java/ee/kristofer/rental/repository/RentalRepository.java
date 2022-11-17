@@ -6,5 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface RentalRepository extends MongoRepository<RentalDatabaseObject, String> {
+    RentalDatabaseObject findByEmail(String email);
 }
 

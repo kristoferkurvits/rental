@@ -8,6 +8,12 @@ group = 'ee.kristofer'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = JavaVersion.VERSION_17
 
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
 repositories {
 	mavenCentral()
 }
@@ -20,9 +26,10 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	implementation 'org.apache.logging.log4j:log4j:2.19.0'
 	implementation 'org.projectlombok:lombok'
-	implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.0'
+	implementation 'redis.clients:jedis:3.9.0'
 
 	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
 
 	testImplementation 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'

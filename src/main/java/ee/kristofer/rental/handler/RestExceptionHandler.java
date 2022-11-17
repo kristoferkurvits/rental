@@ -1,9 +1,11 @@
 package ee.kristofer.rental.handler;
 
 import ee.kristofer.rental.constants.RestErrorType;
+import ee.kristofer.rental.exception.AuthorizationException;
 import ee.kristofer.rental.exception.UnprocessableEntityException;
 import ee.kristofer.rental.model.ErrorResponse;
 import ee.kristofer.rental.model.Response;
+import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.ThreadContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -23,24 +25,35 @@ import static ee.kristofer.rental.constants.Constants.REQUEST_ID;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler
+    @ExceptionHandler(UnprocessableEntityException.class)
     protected ResponseEntity<Object> handleUnprocessableEntityException(final UnprocessableEntityException ex) {
         return Response.nok(HttpStatus.UNPROCESSABLE_ENTITY, createUnprocessableEntityResponse(ex));
+    }
+
+    @ExceptionHandler(AuthorizationException.class)
+    protected ResponseEntity<Object> handleAuthorizationException(final AuthorizationException ex) {
+        return Response.nok(HttpStatus.UNAUTHORIZED, createAuthorizationResponse(ex));
+    }
+
+    private ErrorResponse createAuthorizationResponse(AuthorizationException ex) {
+        return createErrorResponse(ex, RestErrorType.INVALID_API_KEY);
     }
 
     private ErrorResponse createUnprocessableEntityResponse(UnprocessableEntityException ex) {
         RestErrorType restErrorType = Objects.nonNull(ex.getRestErrorType()) ?
                 ex.getRestErrorType() : RestErrorType.INVALID_REQUEST;
+        return createErrorResponse(ex, restErrorType);
+    }
+
+    private ErrorResponse createErrorResponse(Exception ex, RestErrorType restErrorType) {
         var errorResponse = new ErrorResponse();
         errorResponse.setRequestId(ThreadContext.get(REQUEST_ID));
         errorResponse.setRestErrorType(restErrorType);
         errorResponse.setErrorCodes(getErrorCodes(ex));
-
         return errorResponse;
-
     }
 
-    private List<String> getErrorCodes(UnprocessableEntityException ex) {
+    private List<String> getErrorCodes(Exception ex) {
         return Collections.singletonList(ex.getMessage());
     }
 

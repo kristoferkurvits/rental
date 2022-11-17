@@ -26,7 +26,7 @@ public class Response {
     }
 
     public static <T> ResponseEntity<T> nok(HttpStatus statusCode, T body) {
-        return createResponse(statusCode, null);
+        return createResponse(statusCode, body);
     }
 
     private static <T> ResponseEntity<T> createResponse(HttpStatus statusCode, T body) {

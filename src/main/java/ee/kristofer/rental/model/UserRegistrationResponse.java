@@ -1,13 +1,8 @@
 package ee.kristofer.rental.model;
 
+import lombok.Data;
+
+@Data
 public class UserRegistrationResponse {
-    private String apiKey;
-
-    public String getApiKey() {
-        return apiKey;
-    }
-
-    public void setApiKey(String apiKey) {
-        this.apiKey = apiKey;
-    }
+    private String userId;
 }
