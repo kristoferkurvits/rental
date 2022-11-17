@@ -2,7 +2,7 @@ package ee.kristofer.rental.exception;
 
 import ee.kristofer.rental.constants.RestErrorType;
 
-public class UnprocessableEntityException extends RuntimeException {
+public final class UnprocessableEntityException extends RuntimeException {
     private RestErrorType restErrorType;
 
     public UnprocessableEntityException(Throwable cause) { super(cause); }

@@ -5,6 +5,11 @@ import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-@RedisHash
-public interface AuthRepository extends CrudRepository<Auth, String> {
+import java.util.Map;
+
+public interface AuthRepository {
+    void save(Auth auth);
+    Auth findById(String id);
+    void update(Auth auth);
+    void delete(String id);
 }

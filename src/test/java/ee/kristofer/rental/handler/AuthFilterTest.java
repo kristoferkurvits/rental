@@ -11,10 +11,10 @@ import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
-import java.util.Optional;
 
 import static ee.kristofer.rental.constants.Constants.AUTHORIZATION;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -30,6 +30,8 @@ public class AuthFilterTest {
 
     @Mock
     protected HttpServletRequest servletRequest;
+    @Mock
+    protected HttpServletResponse servletResponse;
 
     @Mock
     private AuthRepository authRepository;
@@ -52,18 +54,18 @@ public class AuthFilterTest {
 
         when(servletRequest.getHeader(AUTHORIZATION)).thenReturn(auth.getApiKey());
         when(servletRequest.getRequestURI()).thenReturn(CONTEXT_PATH+"/scooters");
-        when(authRepository.findById(any(String.class))).thenReturn(Optional.of(auth));
+        when(authRepository.findById(any(String.class))).thenReturn(auth);
 
-        assertTrue(authFilter.validRequest(servletRequest));
+        assertTrue(authFilter.validRequest(servletRequest, servletResponse));
     }
 
     @Test
     void registrationPathAuthenticationWithoutApikey() {
         when(servletRequest.getHeader(AUTHORIZATION)).thenReturn("");
         when(servletRequest.getRequestURI()).thenReturn(CONTEXT_PATH+REGISTER_PATH);
-        when(authRepository.findById(any(String.class))).thenReturn(Optional.empty());
+        when(authRepository.findById(any(String.class))).thenReturn(null);
 
-        assertTrue(authFilter.validRequest(servletRequest));
+        assertTrue(authFilter.validRequest(servletRequest, servletResponse));
     }
 
     @Test
@@ -74,9 +76,9 @@ public class AuthFilterTest {
 
         when(servletRequest.getHeader(AUTHORIZATION)).thenReturn(auth.getApiKey());
         when(servletRequest.getRequestURI()).thenReturn(CONTEXT_PATH+"/scooters");
-        when(authRepository.findById(any(String.class))).thenReturn(Optional.empty());
+        when(authRepository.findById(any(String.class))).thenReturn(null);
 
-        assertFalse(authFilter.validRequest(servletRequest));
+        assertFalse(authFilter.validRequest(servletRequest, servletResponse));
     }
 
 }
