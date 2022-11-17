@@ -1,7 +1,7 @@
 package ee.kristofer.rental.handler;
 
-import ee.kristofer.rental.exception.AuthorizationException;
 import ee.kristofer.rental.repository.AuthRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -16,6 +16,7 @@ import java.util.Objects;
 
 import static ee.kristofer.rental.constants.Constants.AUTHORIZATION;
 
+@RequiredArgsConstructor
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class AuthFilter implements Filter {
@@ -28,10 +29,6 @@ public class AuthFilter implements Filter {
 
 
     private final AuthRepository authRepository;
-
-    public AuthFilter(AuthRepository authRepository) {
-        this.authRepository = authRepository;
-    }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
