@@ -1,6 +1,7 @@
 package ee.kristofer.rental.model;
 
 import lombok.experimental.Accessors;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
 import java.util.UUID;
@@ -8,8 +9,9 @@ import java.util.UUID;
 @RedisHash("Auth")
 @Accessors(chain = true)
 public class Auth {
+    @Id
     private String apiKey;
-    private UUID userId;
+    private String userId;
 
     public String getApiKey() {
         return apiKey;
@@ -19,11 +21,11 @@ public class Auth {
         this.apiKey = apiKey;
     }
 
-    public UUID getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(UUID userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 }

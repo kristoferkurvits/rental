@@ -6,4 +6,4 @@ Run local database:
 ```
 
 ##Notes
-* Having problems with Lombok setters, have to create setters manually.
+* Having problems with Lombok annotation processing during compilaton

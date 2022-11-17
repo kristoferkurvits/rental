@@ -1,18 +1,18 @@
 package ee.kristofer.rental.model;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
+
 import lombok.Data;
 import lombok.experimental.Accessors;
+import org.springframework.data.annotation.Id;
 
 import javax.validation.constraints.NotEmpty;
-import java.util.UUID;
+import java.util.List;
 
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+@Data
 @Accessors(chain = true)
-public class User {
+public class RentalDatabaseObject {
 
-
+    @Id
     @NotEmpty
     private String id;
     @NotEmpty
@@ -21,6 +21,13 @@ public class User {
     private String password;
     @NotEmpty
     private String name;
+
+    private Vehicle vehicle;
+    /*
+        This isn't a nice solution because eventually the reservations stack up and reading them all into memory
+        will cause problems in the future. Maybe pagination?
+    */
+    private List<Reservation>reservations;
 
     public String getId() {
         return id;
@@ -52,5 +59,21 @@ public class User {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Vehicle getVehicle() {
+        return vehicle;
+    }
+
+    public void setVehicle(Vehicle vehicle) {
+        this.vehicle = vehicle;
+    }
+
+    public List<Reservation> getReservations() {
+        return reservations;
+    }
+
+    public void setReservations(List<Reservation> reservations) {
+        this.reservations = reservations;
     }
 }
