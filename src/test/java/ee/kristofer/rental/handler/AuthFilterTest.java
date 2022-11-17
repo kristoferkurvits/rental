@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Optional;
-import java.util.UUID;
 
 import static ee.kristofer.rental.constants.Constants.AUTHORIZATION;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -26,7 +25,7 @@ import static org.mockito.Mockito.when;
 public class AuthFilterTest {
 
     private static final String CONTEXT_PATH = "/rental";
-    private static final UUID USER_ID = UUID.fromString("052b41c5-27a0-4aeb-aec4-33629aa07ad5");
+    private static final String USER_ID = "052b41c5-27a0-4aeb-aec4-33629aa07ad5";
     private static final String REGISTER_PATH = "/register";
 
     @Mock
@@ -48,7 +47,7 @@ public class AuthFilterTest {
     @Test
     void successfulAuthentication() {
         var auth = new Auth();
-        auth.setApiKey(new String(Base64.getEncoder().encode(USER_ID.toString().getBytes(StandardCharsets.UTF_8))));
+        auth.setApiKey(new String(Base64.getEncoder().encode(USER_ID.getBytes(StandardCharsets.UTF_8))));
         auth.setUserId(USER_ID);
 
         when(servletRequest.getHeader(AUTHORIZATION)).thenReturn(auth.getApiKey());
@@ -70,7 +69,7 @@ public class AuthFilterTest {
     @Test
     void unsuccessfulAuthentication() {
         var auth = new Auth();
-        auth.setApiKey(new String(Base64.getEncoder().encode(USER_ID.toString().getBytes(StandardCharsets.UTF_8))));
+        auth.setApiKey(new String(Base64.getEncoder().encode(USER_ID.getBytes(StandardCharsets.UTF_8))));
         auth.setUserId(USER_ID);
 
         when(servletRequest.getHeader(AUTHORIZATION)).thenReturn(auth.getApiKey());
