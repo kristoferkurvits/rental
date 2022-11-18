@@ -1,5 +1,25 @@
 version: '3.9'
 services:
+  mongo-gui:
+    container_name: "mongo-gui"
+    image: ugleiton/mongo-gui
+    restart: always
+    ports:
+      - "4321:4321"
+    environment:
+      - MONGO_URL=mongodb://mongodb_container:27017
+    networks:
+      - rental-network
+    depends_on:
+      - mongodb_container
+
+  mongo-seed:
+    build: ./test-data
+    depends_on:
+      - mongodb_container
+    networks:
+      - rental-network
+
   mongodb_container:
     image: mongo:6.0.3
     ports:
@@ -12,8 +32,6 @@ services:
 volumes:
   rental-db:
     name: rental-db
-  cache:
-    name: cache
 
 networks:
   rental-network:

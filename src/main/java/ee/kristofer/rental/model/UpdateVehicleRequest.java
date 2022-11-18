@@ -5,17 +5,21 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @Data
 @Accessors(chain = true)
-public class Vehicle {
+public class UpdateVehicleRequest {
+
+    @NotEmpty
     private String id;
 
     @Max(100)
     @Min(0)
-    private int stateOfCharge;
+    private Integer stateOfCharge;
 
     private Coordinates coordinates;
 }

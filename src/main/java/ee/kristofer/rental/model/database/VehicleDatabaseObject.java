@@ -1,26 +1,26 @@
 package ee.kristofer.rental.model.database;
 
-
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import ee.kristofer.rental.constants.EntityType;
-import ee.kristofer.rental.model.Reservation;
-import ee.kristofer.rental.model.Vehicle;
+import ee.kristofer.rental.model.Coordinates;
+import ee.kristofer.rental.util.StringUtil;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
-import java.util.List;
 
 @Data
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @Accessors(chain = true)
-public class UserDatabaseObject {
+public class VehicleDatabaseObject {
 
-    public UserDatabaseObject() {
-        this.type = EntityType.USER;
+    public VehicleDatabaseObject() {
+        this.type = EntityType.VEHICLE;
     }
 
     @Id
@@ -31,20 +31,19 @@ public class UserDatabaseObject {
     @Indexed
     private EntityType type;
 
-    @Indexed
-    @NotEmpty
-    private String email;
-    @NotEmpty
-    private String password;
-    @NotEmpty
-    private String name;
+    private String userId;
 
-    private Vehicle vehicle;
-    /*
-        This isn't a nice solution because eventually the reservations stack up and reading them all into memory
-        will cause problems in the future. Maybe pagination?
-    */
-    private List<Reservation>reservations;
+    @Max(100)
+    @Min(0)
+    private int stateOfCharge;
 
+    @NotEmpty
+    private Coordinates coordinates;
+
+    private boolean inUse;
+    //Vehicle is in use if a user has been assigned to it
+    public boolean isInUse() {
+        return StringUtil.isNullOrEmpty(this.userId);
+    }
 
 }

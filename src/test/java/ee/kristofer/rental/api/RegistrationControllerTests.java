@@ -1,8 +1,10 @@
 package ee.kristofer.rental.api;
 
-import ee.kristofer.rental.MapperUtil;
+import ee.kristofer.rental.model.UserRegistrationResponse;
+import ee.kristofer.rental.util.MapperUtil;
 import ee.kristofer.rental.handler.AuthFilter;
 import ee.kristofer.rental.model.User;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +16,11 @@ import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
+import java.util.Objects;
 import java.util.UUID;
 
-import static ee.kristofer.rental.constants.Constants.*;
+import static ee.kristofer.rental.constants.Constants.CONTENT_TYPE;
+import static ee.kristofer.rental.constants.Constants.CONTENT_TYPE_JSON;
 import static ee.kristofer.rental.handler.AuthFilter.REGISTRATION_PATH;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -52,7 +54,9 @@ public class RegistrationControllerTests extends IntegrationTestBase {
 
     @Test
     void registerNewUser() throws Exception {
-        performPostRequest(createUser(UUID.randomUUID().toString()), status().isOk());
+        var mvcResult = performPostRequest(createUser(UUID.randomUUID().toString()), status().isOk());
+        var response = mapperUtil.jsonToObject(mvcResult.getResponse().getContentAsString(), UserRegistrationResponse.class);
+        Assertions.assertTrue(Objects.nonNull(response.getUserId()));
     }
 
     @Test
