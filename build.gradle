@@ -15,10 +15,6 @@ configurations {
 	}
 }
 
-ext {
-	redisOmVersion = '0.5.2-SNAPSHOT'
-}
-
 repositories {
 	mavenCentral()
 }
