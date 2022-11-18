@@ -11,6 +11,8 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
@@ -24,6 +26,16 @@ import static ee.kristofer.rental.constants.Constants.REQUEST_ID;
 @ControllerAdvice
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
+
+    private static String convertValidationMessage(FieldError fieldError) {
+        return switch (fieldError.getCode() == null ? "" : fieldError.getCode()) {
+            case "NotNull", "NotBlank", "NotEmpty" -> fieldError.getField() + "REQUIRED";
+            case "Max" -> fieldError.getField() + "_INVALID_MAX";
+            case "MIN" -> fieldError.getField() + "_INVALID_MIN";
+            case "PATTERN", "Email" -> fieldError.getField() + "_INVALID_PATTERN";
+            default -> fieldError.getField() + "INVALID";
+        };
+    }
 
     @ExceptionHandler(UnprocessableEntityException.class)
     protected ResponseEntity<Object> handleUnprocessableEntityException(final UnprocessableEntityException ex) {
@@ -54,6 +66,11 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     private List<String> getErrorCodes(Exception ex) {
+        if (ex instanceof MethodArgumentNotValidException mex) {
+            return mex.getBindingResult().getFieldErrors().stream()
+                    .map(RestExceptionHandler::convertValidationMessage)
+                    .toList();
+        }
         return Collections.singletonList(ex.getMessage());
     }
 
