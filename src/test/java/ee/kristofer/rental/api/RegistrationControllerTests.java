@@ -19,7 +19,8 @@ import org.springframework.web.context.WebApplicationContext;
 import java.util.Objects;
 import java.util.UUID;
 
-import static ee.kristofer.rental.constants.Constants.*;
+import static ee.kristofer.rental.constants.Constants.CONTENT_TYPE;
+import static ee.kristofer.rental.constants.Constants.CONTENT_TYPE_JSON;
 import static ee.kristofer.rental.handler.AuthFilter.REGISTRATION_PATH;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;

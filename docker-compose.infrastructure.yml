@@ -13,6 +13,12 @@ services:
     depends_on:
       - mongodb_container
 
+  mongo-seed:
+    build: ./test-data
+    depends_on:
+      - mongodb_container
+    networks:
+      - rental-network
 
   mongodb_container:
     image: mongo:6.0.3

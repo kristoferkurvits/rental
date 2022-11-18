@@ -15,13 +15,12 @@ import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Objects;
 
 import static ee.kristofer.rental.constants.Constants.*;
-import static ee.kristofer.rental.handler.AuthFilter.REGISTRATION_PATH;
+import static ee.kristofer.rental.constants.TestConstants.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -29,6 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class VehicleControllerTests extends IntegrationTestBase {
     private static final String VEHICLE_PATH = "/vehicle";
+    private static final String APIKEY_FOR_EXISTING_USER = new String(Base64.getEncoder().encode(USER_ID.getBytes(StandardCharsets.UTF_8)));
     private final MapperUtil mapperUtil = MapperUtil.getInstance();
 
     @Value("${server.servlet.context-path}")
@@ -53,10 +53,18 @@ public class VehicleControllerTests extends IntegrationTestBase {
     @Test
     void createVehicleSuccessfully() throws Exception {
         var mvcResult = performPostRequest(createVehicle(), status().isOk());
-
         var response = mapperUtil.jsonToObject(mvcResult.getResponse().getContentAsString(), VehicleResponse.class);
         Assertions.assertTrue(Objects.nonNull(response.getVehicleId()));
-     }
+    }
+
+    @Test
+    void updateVehicle() throws Exception {
+        var vehicle = createVehicle();
+        vehicle.setId(VEHICLE_ID);
+        var mvcResult = performPutRequest(vehicle, status().isOk());
+        var response = mapperUtil.jsonToObject(mvcResult.getResponse().getContentAsString(), VehicleResponse.class);
+        Assertions.assertEquals(VEHICLE_ID, response.getVehicleId());
+    }
 
     private Vehicle createVehicle() {
         return new Vehicle()
@@ -71,7 +79,7 @@ public class VehicleControllerTests extends IntegrationTestBase {
         return this.mockMvc.perform(post(contextPath + VEHICLE_PATH)
             .contextPath(contextPath)
             .header(CONTENT_TYPE, CONTENT_TYPE_JSON)
-            .header(AUTHORIZATION, "MDIwMDAwMGQtY2I1OC00NTVlLWI4NDEtN2NmOGVjYTc1MjRk") // TODO Need to add test data to DB
+            .header(AUTHORIZATION, APIKEY_FOR_EXISTING_USER)
             .content(mapperUtil.objectToJson(vehicle)))
             .andDo(print()).andExpect(resultMatcher)
             .andReturn();
@@ -81,6 +89,7 @@ public class VehicleControllerTests extends IntegrationTestBase {
         return this.mockMvc.perform(put(contextPath + VEHICLE_PATH)
             .contextPath(contextPath)
             .header(CONTENT_TYPE, CONTENT_TYPE_JSON)
+            .header(AUTHORIZATION, APIKEY_FOR_EXISTING_USER)
             .content(mapperUtil.objectToJson(vehicle)))
             .andDo(print()).andExpect(resultMatcher)
             .andReturn();
