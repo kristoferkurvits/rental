@@ -18,6 +18,7 @@ import org.springframework.web.context.WebApplicationContext;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Objects;
+import java.util.UUID;
 
 import static ee.kristofer.rental.constants.Constants.*;
 import static ee.kristofer.rental.constants.TestConstants.*;
@@ -59,11 +60,23 @@ public class VehicleControllerTests extends IntegrationTestBase {
 
     @Test
     void updateVehicle() throws Exception {
-        var vehicle = createVehicle();
-        vehicle.setId(VEHICLE_ID);
-        var mvcResult = performPutRequest(vehicle, status().isOk());
+        var mvcResult = performPutRequest(createUpdateVehicleRequest(), status().isOk());
         var response = mapperUtil.jsonToObject(mvcResult.getResponse().getContentAsString(), VehicleResponse.class);
         Assertions.assertEquals(VEHICLE_ID, response.getVehicleId());
+    }
+
+    @Test
+    void updateVehicleNotFound() throws Exception {
+        performPutRequest(createUpdateVehicleRequest(), status().isNotFound());
+    }
+
+    private UpdateVehicleRequest createUpdateVehicleRequest() {
+        return new UpdateVehicleRequest()
+                .setId(UUID.randomUUID().toString())
+                .setStateOfCharge(50)
+                .setCoordinates(new Coordinates()
+                        .setLongitude(5.44)
+                        .setLatitude(3.20));
     }
 
     private Vehicle createVehicle() {
@@ -85,7 +98,7 @@ public class VehicleControllerTests extends IntegrationTestBase {
             .andReturn();
     }
 
-    private MvcResult performPutRequest(Vehicle vehicle, ResultMatcher resultMatcher) throws Exception {
+    private MvcResult performPutRequest(UpdateVehicleRequest vehicle, ResultMatcher resultMatcher) throws Exception {
         return this.mockMvc.perform(put(contextPath + VEHICLE_PATH)
             .contextPath(contextPath)
             .header(CONTENT_TYPE, CONTENT_TYPE_JSON)
