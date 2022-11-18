@@ -2,10 +2,11 @@ package ee.kristofer.rental.handler;
 
 import ee.kristofer.rental.constants.RestErrorType;
 import ee.kristofer.rental.exception.AuthorizationException;
+import ee.kristofer.rental.exception.NotFoundException;
 import ee.kristofer.rental.exception.UnprocessableEntityException;
 import ee.kristofer.rental.model.ErrorResponse;
 import ee.kristofer.rental.model.Response;
-import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.ThreadContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -25,7 +26,10 @@ import static ee.kristofer.rental.constants.Constants.REQUEST_ID;
 
 @ControllerAdvice
 @Order(Ordered.HIGHEST_PRECEDENCE)
+@Log4j2
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
+
+    private static final List<HttpStatus> LOG_ERROR_STATUSES = List.of(HttpStatus.INTERNAL_SERVER_ERROR);
 
     private static String convertValidationMessage(FieldError fieldError) {
         return switch (fieldError.getCode() == null ? "" : fieldError.getCode()) {
@@ -45,6 +49,20 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(AuthorizationException.class)
     protected ResponseEntity<Object> handleAuthorizationException(final AuthorizationException ex) {
         return Response.nok(HttpStatus.UNAUTHORIZED, createAuthorizationResponse(ex));
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    protected ResponseEntity<Object> handleNotFoundException(final NotFoundException ex) {
+        return handleException(HttpStatus.NOT_FOUND, ex);
+    }
+
+    private ResponseEntity<Object> handleException(HttpStatus httpStatus, final Exception ex) {
+        if (LOG_ERROR_STATUSES.contains(httpStatus)) {
+            log.error(ex.getMessage(), ex);
+        } else {
+            log.warn(ex.getMessage(), ex);
+        }
+        return Response.nok(httpStatus);
     }
 
     private ErrorResponse createAuthorizationResponse(AuthorizationException ex) {
