@@ -1,7 +1,7 @@
 package ee.kristofer.rental.handler;
 
-import ee.kristofer.rental.model.Auth;
-import ee.kristofer.rental.repository.AuthRepository;
+import ee.kristofer.rental.model.database.UserDatabaseObject;
+import ee.kristofer.rental.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.Optional;
 
 import static ee.kristofer.rental.constants.Constants.AUTHORIZATION;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -34,7 +35,7 @@ public class AuthFilterTest {
     protected HttpServletResponse servletResponse;
 
     @Mock
-    private AuthRepository authRepository;
+    private UserRepository userRepository;
 
     @InjectMocks
     private AuthFilter authFilter;
@@ -48,35 +49,34 @@ public class AuthFilterTest {
 
     @Test
     void successfulAuthentication() {
-        var auth = new Auth();
-        auth.setApiKey(new String(Base64.getEncoder().encode(USER_ID.getBytes(StandardCharsets.UTF_8))));
-        auth.setUserId(USER_ID);
-
-        when(servletRequest.getHeader(AUTHORIZATION)).thenReturn(auth.getApiKey());
+        var user = createUser();
+        when(servletRequest.getHeader(AUTHORIZATION)).thenReturn(new String(Base64.getEncoder().encode(USER_ID.getBytes(StandardCharsets.UTF_8))));
         when(servletRequest.getRequestURI()).thenReturn(CONTEXT_PATH+"/scooters");
-        when(authRepository.findById(any(String.class))).thenReturn(auth);
+        when(userRepository.findById(any(String.class))).thenReturn(Optional.of(user));
 
         assertTrue(authFilter.validRequest(servletRequest, servletResponse));
+    }
+
+    private UserDatabaseObject createUser() {
+        var user = new UserDatabaseObject();
+        user.setId(USER_ID);
+        return user;
     }
 
     @Test
     void registrationPathAuthenticationWithoutApikey() {
         when(servletRequest.getHeader(AUTHORIZATION)).thenReturn("");
         when(servletRequest.getRequestURI()).thenReturn(CONTEXT_PATH+REGISTER_PATH);
-        when(authRepository.findById(any(String.class))).thenReturn(null);
+        when(userRepository.findById(any(String.class))).thenReturn(Optional.empty());
 
         assertTrue(authFilter.validRequest(servletRequest, servletResponse));
     }
 
     @Test
     void unsuccessfulAuthentication() {
-        var auth = new Auth();
-        auth.setApiKey(new String(Base64.getEncoder().encode(USER_ID.getBytes(StandardCharsets.UTF_8))));
-        auth.setUserId(USER_ID);
-
-        when(servletRequest.getHeader(AUTHORIZATION)).thenReturn(auth.getApiKey());
+        when(servletRequest.getHeader(AUTHORIZATION)).thenReturn("");
         when(servletRequest.getRequestURI()).thenReturn(CONTEXT_PATH+"/scooters");
-        when(authRepository.findById(any(String.class))).thenReturn(null);
+        when(userRepository.findById(any(String.class))).thenReturn(Optional.empty());
 
         assertFalse(authFilter.validRequest(servletRequest, servletResponse));
     }

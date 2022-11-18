@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '2.7.5'
 	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+	id 'com.avast.gradle.docker-compose' version '0.14.11'
 }
 
 group = 'ee.kristofer'
@@ -14,6 +15,10 @@ configurations {
 	}
 }
 
+ext {
+	redisOmVersion = '0.5.2-SNAPSHOT'
+}
+
 repositories {
 	mavenCentral()
 }
@@ -23,10 +28,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	implementation 'org.apache.logging.log4j:log4j:2.19.0'
 	implementation 'org.projectlombok:lombok'
-	implementation 'redis.clients:jedis:3.9.0'
 
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
@@ -34,6 +37,28 @@ dependencies {
 	testImplementation 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
+}
+
+sourceSets {
+	integrationTest {
+		java {
+			compileClasspath += main.output + test.output
+			runtimeClasspath += main.output + test.output
+			srcDir file('src/integrationTest/java')
+		}
+	}
+}
+
+task integrationTest(type: Test) {
+	testClassesDirs = sourceSets.integrationTest.output.classesDirs
+	classpath = sourceSets.integrationTest.runtimeClasspath
+	outputs.upToDateWhen { false }
+}
+
+dockerCompose {
+	useComposeFiles = ["docker-compose-infrastructure.yml"]
+
+	isRequiredBy(project.tasks.integrationTest)
 }
 
 tasks.named('test') {

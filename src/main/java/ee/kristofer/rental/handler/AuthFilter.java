@@ -1,6 +1,6 @@
 package ee.kristofer.rental.handler;
 
-import ee.kristofer.rental.repository.AuthRepository;
+import ee.kristofer.rental.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.Ordered;
@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Base64;
-import java.util.Objects;
 
 import static ee.kristofer.rental.constants.Constants.AUTHORIZATION;
 
@@ -21,14 +20,13 @@ import static ee.kristofer.rental.constants.Constants.AUTHORIZATION;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class AuthFilter implements Filter {
 
-    private static final String REGISTRATION_PATH = "/register";
+    public static final String REGISTRATION_PATH = "/register";
 
 
     @Value("${server.servlet.context-path}")
     private String contextPath;
 
-
-    private final AuthRepository authRepository;
+    private final UserRepository userRepository;
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -57,7 +55,7 @@ public class AuthFilter implements Filter {
             return false;
         }
 
-        return Objects.nonNull(authRepository.findById(userId));
+         return userRepository.findById(userId).isPresent();
     }
 
 }

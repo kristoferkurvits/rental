@@ -1,15 +1,5 @@
 version: '3.9'
 services:
-  redis:
-    image: redis:6.2-alpine
-    restart: always
-    ports:
-      - '6379:6379'
-    volumes:
-      - cache:/data/cache
-    networks:
-      - rental-network
-
   mongodb_container:
     image: mongo:6.0.3
     ports:

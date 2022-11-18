@@ -25,7 +25,7 @@ public class WebSecurityConfig {
             .disable();
 
         http
-            .addFilterBefore(authFilter, BasicAuthenticationFilter.class);
+            .addFilterAfter(authFilter, BasicAuthenticationFilter.class);
 
         return http.build();
     }
