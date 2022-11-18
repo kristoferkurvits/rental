@@ -1,6 +1,7 @@
 package ee.kristofer.rental.handler;
 
 import ee.kristofer.rental.repository.UserRepository;
+import ee.kristofer.rental.util.StringUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.Ordered;
@@ -42,11 +43,16 @@ public class AuthFilter implements Filter {
 
     public boolean validRequest(HttpServletRequest req, HttpServletResponse res) {
 
-        if (req.getRequestURI().startsWith(contextPath + REGISTRATION_PATH)) {
+        if (unauthorizedPath(req)) {
             return true;
         }
 
         var apiKey = req.getHeader(AUTHORIZATION);
+        if (StringUtil.isNullOrEmpty(apiKey)) {
+            res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return false;
+        }
+
         String userId;
         try {
             userId = new String(Base64.getDecoder().decode(apiKey));
@@ -56,6 +62,12 @@ public class AuthFilter implements Filter {
         }
 
          return userRepository.findById(userId).isPresent();
+    }
+
+    private boolean unauthorizedPath(HttpServletRequest req) {
+
+        return req.getRequestURI().startsWith(contextPath + REGISTRATION_PATH)
+                || req.getRequestURI().contains("swagger") || req.getRequestURI().contains("v2/api-docs");
     }
 
 }
