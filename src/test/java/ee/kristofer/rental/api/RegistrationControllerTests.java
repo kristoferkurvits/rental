@@ -56,7 +56,6 @@ public class RegistrationControllerTests extends IntegrationTestBase {
     void registerNewUser() throws Exception {
         var mvcResult = performPostRequest(createUser(UUID.randomUUID().toString()), status().isOk());
         var response = mapperUtil.jsonToObject(mvcResult.getResponse().getContentAsString(), UserRegistrationResponse.class);
-        System.out.println(response.getUserId());
         Assertions.assertTrue(Objects.nonNull(response.getUserId()));
     }
 
