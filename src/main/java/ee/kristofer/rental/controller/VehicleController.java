@@ -4,6 +4,8 @@ import ee.kristofer.rental.model.UpdateVehicleRequest;
 import ee.kristofer.rental.model.VehicleResponse;
 import ee.kristofer.rental.model.Vehicle;
 import ee.kristofer.rental.serviceImpl.VehicleServiceImpl;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +19,8 @@ import javax.validation.Valid;
 @Log4j2
 @RestController
 @RequiredArgsConstructor
+@ApiImplicitParams({
+        @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, paramType = "header", dataTypeClass = String.class)})
 public class VehicleController {
 
     private final VehicleServiceImpl vehicleService;
