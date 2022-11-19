@@ -7,7 +7,6 @@ import ee.kristofer.rental.serviceImpl.VehicleServiceImpl;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -18,7 +17,6 @@ import javax.validation.Valid;
 
 import static ee.kristofer.rental.constants.Constants.AUTHORIZATION;
 
-@Log4j2
 @RestController
 @RequiredArgsConstructor
 @ApiImplicitParams({

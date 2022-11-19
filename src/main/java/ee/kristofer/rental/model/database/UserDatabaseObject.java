@@ -5,13 +5,14 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import ee.kristofer.rental.constants.EntityType;
 import ee.kristofer.rental.model.Reservation;
-import ee.kristofer.rental.model.Vehicle;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import java.time.Instant;
 import java.util.List;
 
 @Data
@@ -21,6 +22,9 @@ public class UserDatabaseObject {
 
     public UserDatabaseObject() {
         this.type = EntityType.USER;
+        var time = Instant.now();
+        this.createdAt = time;
+        this.modifiedAt = time;
     }
 
     @Id
@@ -39,12 +43,18 @@ public class UserDatabaseObject {
     @NotEmpty
     private String name;
 
-    private Vehicle vehicle;
+    private VehicleDatabaseObject vehicle;
     /*
         This isn't a nice solution because eventually the reservations stack up and reading them all into memory
         will cause problems in the future. Maybe pagination?
     */
-    private List<Reservation>reservations;
+    private List<Reservation> previousReservations;
+    private Reservation ongoingReservation;
+
+    @NotNull
+    private Instant createdAt;
+    @NotNull
+    private Instant modifiedAt;
 
 
 }

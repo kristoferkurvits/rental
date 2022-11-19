@@ -3,6 +3,7 @@ package ee.kristofer.rental.handler;
 import ee.kristofer.rental.repository.UserRepository;
 import ee.kristofer.rental.util.StringUtil;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.ThreadContext;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -15,6 +16,7 @@ import java.io.IOException;
 import java.util.Base64;
 
 import static ee.kristofer.rental.constants.Constants.AUTHORIZATION;
+import static ee.kristofer.rental.constants.Constants.USER_ID_PARAM;
 
 @RequiredArgsConstructor
 @Component
@@ -61,7 +63,11 @@ public class AuthFilter implements Filter {
             return false;
         }
 
-         return userRepository.findById(userId).isPresent();
+        if(userRepository.findById(userId).isPresent()) {
+            ThreadContext.put(USER_ID_PARAM, userId);
+            return true;
+        }
+        return false;
     }
 
     private boolean unauthorizedPath(HttpServletRequest req) {

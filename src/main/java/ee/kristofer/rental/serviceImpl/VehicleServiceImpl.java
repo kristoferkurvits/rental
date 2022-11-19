@@ -11,6 +11,7 @@ import ee.kristofer.rental.service.VehicleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -37,6 +38,7 @@ public class VehicleServiceImpl implements VehicleService {
         var existingVehicle = optionalExistingVehicle.get();
         vehicleRepository.save(
                 updateExistingVehicle(existingVehicle, vehicle)
+                        .setModifiedAt(Instant.now())
         );
         return new VehicleResponse()
                 .setVehicleId(existingVehicle.getId());
