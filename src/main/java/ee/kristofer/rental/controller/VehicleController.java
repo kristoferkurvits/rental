@@ -16,11 +16,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
+import static ee.kristofer.rental.constants.Constants.AUTHORIZATION;
+
 @Log4j2
 @RestController
 @RequiredArgsConstructor
 @ApiImplicitParams({
-        @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, paramType = "header", dataTypeClass = String.class)})
+        @ApiImplicitParam(name = AUTHORIZATION, value = "Access Token", required = true, paramType = "header", dataTypeClass = String.class)})
 public class VehicleController {
 
     private final VehicleServiceImpl vehicleService;
