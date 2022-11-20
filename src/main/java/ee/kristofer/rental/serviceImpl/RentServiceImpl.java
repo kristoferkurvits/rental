@@ -5,8 +5,10 @@ import ee.kristofer.rental.exception.NotAcceptableException;
 import ee.kristofer.rental.exception.NotFoundException;
 import ee.kristofer.rental.exception.RentalException;
 import ee.kristofer.rental.model.*;
+import ee.kristofer.rental.model.database.ReservationDatabaseObject;
 import ee.kristofer.rental.model.database.UserDatabaseObject;
 import ee.kristofer.rental.model.database.VehicleDatabaseObject;
+import ee.kristofer.rental.repository.ReservationRepository;
 import ee.kristofer.rental.repository.UserRepository;
 import ee.kristofer.rental.repository.VehicleRepository;
 import ee.kristofer.rental.service.RentService;
@@ -31,6 +33,7 @@ public class RentServiceImpl implements RentService {
     private final UserRepository userRepository;
     private final VehicleRepository vehicleRepository;
     private final PricingServiceImpl pricingService;
+    private final ReservationRepository reservationRepository;
 
 
     @Override
@@ -61,14 +64,13 @@ public class RentServiceImpl implements RentService {
         vehicle.setUserId(startRentRequest.getUserId());
         vehicle.setInUse(true);
 
-        var reservation = createReservation(vehicle);
-
+        var reservation = createReservation(vehicle, user.getId());
         user.setOngoingReservation(reservation);
-        user.setVehicle(vehicle);
         user.setModifiedAt(Instant.now());
 
         vehicleRepository.save(vehicle);
         userRepository.save(user);
+        reservationRepository.save(reservation);
         return new StartRentResponse()
                 .setReservationId(reservation.getId())
                 .setStart(Instant.now());
@@ -98,31 +100,28 @@ public class RentServiceImpl implements RentService {
         }
 
         var endTime = Instant.now();
-        var ongoingReservation = user.getOngoingReservation();
-        var cost = pricingService.calculatePrice(ongoingReservation.getStart(), endTime);
-        //Bill user
-        ongoingReservation
-                .setCost(cost)
-                .setEndCoordinates(vehicle.getCoordinates())
-                .setEnd(endTime);
+        var reservation = user.getOngoingReservation();
+        var cost = pricingService.calculatePrice(reservation.getStart(), endTime);
+        reservation
+            .setCost(cost)
+            .setEndCoordinates(vehicle.getCoordinates()) //Vehicle coordinates should change in time
+            .setEnd(endTime)
+            .setActive(false);
+        reservationRepository.save(reservation);
 
-        resetUserReservation(user, ongoingReservation);
+        resetUserReservation(user);
         resetVehicleReservation(vehicle);
         return new EndRentResponse()
                 .setEndTime(endTime)
                 .setCost(cost)
-                .setReservationId(ongoingReservation.getId());
+                .setReservationId(reservation.getId());
     }
 
     private boolean userAndVehicleMatch(String userId, String userIdOnVehicle) {
         return userId.equals(userIdOnVehicle);
     }
 
-    private void resetUserReservation(UserDatabaseObject user, Reservation ongoingReservation) {
-        var previousReservations = user.getPreviousReservations();
-        if (Objects.nonNull(previousReservations)) {
-            user.getPreviousReservations().add(ongoingReservation);
-        }
+    private void resetUserReservation(UserDatabaseObject user) {
         user.setOngoingReservation(null);
         userRepository.save(user);
     }
@@ -134,9 +133,11 @@ public class RentServiceImpl implements RentService {
         vehicleRepository.save(vehicle);
     }
 
-    private Reservation createReservation(VehicleDatabaseObject vehicle) {
-        return new Reservation()
+    private ReservationDatabaseObject createReservation(VehicleDatabaseObject vehicle, String userId) {
+        return new ReservationDatabaseObject()
+                .setUserId(userId)
                 .setId(UUID.randomUUID().toString())
-                .setStartCoordinates(vehicle.getCoordinates());
+                .setStartCoordinates(vehicle.getCoordinates())
+                .setVehicleId(vehicle.getId());
     }
 }

@@ -43,13 +43,7 @@ public class UserDatabaseObject {
     @NotEmpty
     private String name;
 
-    private VehicleDatabaseObject vehicle;
-    /*
-        This isn't a nice solution because eventually the reservations stack up and reading them all into memory
-        will cause problems in the future. Maybe pagination?
-    */
-    private List<Reservation> previousReservations;
-    private Reservation ongoingReservation;
+    private ReservationDatabaseObject ongoingReservation;
 
     @NotNull
     private Instant createdAt;

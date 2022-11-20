@@ -27,6 +27,7 @@ public class ReservationDatabaseObject {
         this.active = true;
         this.createdAt = now;
         this.modifiedAt = now;
+        this.type = EntityType.RESERVATION;
     }
 
     @Id
@@ -40,6 +41,9 @@ public class ReservationDatabaseObject {
     @NotEmpty
     @Indexed
     private String userId;
+
+    @NotEmpty
+    private String vehicleId;
 
     private Instant start;
     @NotEmpty

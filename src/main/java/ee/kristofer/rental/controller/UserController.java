@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 
 import java.util.Map;
 
@@ -28,7 +29,7 @@ public class UserController {
     public ResponseEntity<Map<String, Object>> getReservations(
             @Valid @RequestBody UserReservationsRequest userReservationsRequest,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "3") int size) {
+            @RequestParam(defaultValue = "3") @Min(1) int size) {
         return ResponseEntity.ok(userService.getReservations(userReservationsRequest,page,size));
     }
 }

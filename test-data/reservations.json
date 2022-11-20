@@ -3,10 +3,11 @@
     "_id": "451fc576-2f46-4eeb-ba3b-8a229c379b7c",
     "active": "true",
     "userId": "6718c46b-0f66-4ea5-a412-d3facbedeb3f",
+    "vehicleId": "4cd44bf0-48e9-4a4b-b93b-14b62a7688f3",
     "start": "2022-11-19T13:24:41.099Z",
     "startCoordinates": {
-      "longitude": 5.44,
-      "latitude": 3.2
+      "longitude": 13.155,
+      "latitude": 41.2
     },
     "createdAt": "2022-11-19T13:08:42.073Z",
     "modifiedAt": "2022-11-19T13:24:41.099Z",
@@ -18,11 +19,29 @@
     "userId": "6718c46b-0f66-4ea5-a412-d3facbedeb3f",
     "start": "2022-11-19T13:24:41.099Z",
     "startCoordinates": {
+      "longitude": 44.44,
+      "latitude": 78.2
+    },
+    "createdAt": "2022-11-19T13:08:42.073Z",
+    "modifiedAt": "2022-11-19T13:24:41.099Z",
+    "_class": "ee.kristofer.rental.model.database.ReservationDatabaseObject"
+  },
+  {
+    "_id": "2afd66e2-68ff-11ed-9022-0242ac120002",
+    "active": "true",
+    "userId": "5944a73c-6868-11ed-9022-0242ac120002",
+    "vehicleId": "5944ad54-6868-11ed-9022-0242ac120002",
+    "start": "2022-11-19T13:24:41.099Z",
+    "startCoordinates": {
       "longitude": 51.44,
       "latitude": 31.2
+    },
+    "endCoordinates": {
+      "longitude": 2.0,
+      "latitude": 5.0
     },
     "createdAt": "2022-11-19T13:08:42.073Z",
     "modifiedAt": "2022-11-19T13:24:41.099Z",
     "_class": "ee.kristofer.rental.model.database.ReservationDatabaseObject"
   }
-]
+  ]

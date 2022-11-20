@@ -8,8 +8,10 @@ import ee.kristofer.rental.model.Coordinates;
 import ee.kristofer.rental.model.EndRentRequest;
 import ee.kristofer.rental.model.Reservation;
 import ee.kristofer.rental.model.StartRentRequest;
+import ee.kristofer.rental.model.database.ReservationDatabaseObject;
 import ee.kristofer.rental.model.database.UserDatabaseObject;
 import ee.kristofer.rental.model.database.VehicleDatabaseObject;
+import ee.kristofer.rental.repository.ReservationRepository;
 import ee.kristofer.rental.repository.UserRepository;
 import ee.kristofer.rental.repository.VehicleRepository;
 import ee.kristofer.rental.serviceImpl.PricingServiceImpl;
@@ -44,6 +46,8 @@ public class RentServiceTests {
     private VehicleRepository vehicleRepository;
     @Mock
     private PricingServiceImpl pricingService;
+    @Mock
+    private ReservationRepository reservationRepository;
 
     @InjectMocks
     RentServiceImpl rentService;
@@ -91,7 +95,7 @@ public class RentServiceTests {
     void startRentUserAlreadyHasOngoingReservation() {
         ThreadContext.put(USER_ID_PARAM, USER_ID_WITHOUT_VEHICLE);
         when(vehicleRepository.findById(any(String.class))).thenReturn(createVehicleStartRent(false));
-        when(userRepository.findById(any(String.class))).thenReturn(createUserStartRent(new Reservation()));
+        when(userRepository.findById(any(String.class))).thenReturn(createUserStartRent(new ReservationDatabaseObject()));
         assertThrows(NotAcceptableException.class,
                 () -> rentService.startRent(createStartRentRequest(VEHICLE_ID, USER_ID_WITHOUT_VEHICLE)));
     }
@@ -102,7 +106,7 @@ public class RentServiceTests {
                 .setUserId(userId);
     }
 
-    private Optional<UserDatabaseObject> createUserStartRent(Reservation reservation) {
+    private Optional<UserDatabaseObject> createUserStartRent(ReservationDatabaseObject reservation) {
         return Optional.of(new UserDatabaseObject()
                 .setId(USER_ID_WITHOUT_VEHICLE)
                 .setOngoingReservation(reservation));
@@ -167,7 +171,7 @@ public class RentServiceTests {
     void endRentUserAndVehicleDoNotMatch() {
         ThreadContext.put(USER_ID_PARAM, USER_ID_WITH_VEHICLE);
         when(vehicleRepository.findById(any(String.class))).thenReturn(createVehicleEndRent(true, USER_ID_WITHOUT_VEHICLE));
-        when(userRepository.findById(any(String.class))).thenReturn(createUserEndRent(new Reservation(), USER_ID_WITH_VEHICLE));
+        when(userRepository.findById(any(String.class))).thenReturn(createUserEndRent(new ReservationDatabaseObject(), USER_ID_WITH_VEHICLE));
         assertThrows(NotAcceptableException.class,
                 () -> rentService.endRent(createEndRentRequest(VEHICLE_ID, USER_ID_WITH_VEHICLE)));
     }
@@ -178,7 +182,7 @@ public class RentServiceTests {
                 .setUserId(userId);
     }
 
-    private Optional<UserDatabaseObject> createUserEndRent(Reservation reservation, String userId) {
+    private Optional<UserDatabaseObject> createUserEndRent(ReservationDatabaseObject reservation, String userId) {
         return Optional.of(new UserDatabaseObject()
                 .setId(userId)
                 .setOngoingReservation(reservation));
@@ -193,8 +197,8 @@ public class RentServiceTests {
                 .setUserId(userId));
     }
 
-    private Reservation createReservation() {
-        return new Reservation()
+    private ReservationDatabaseObject createReservation() {
+        return new ReservationDatabaseObject()
                 .setId(RESERVATION_ID)
                 .setStart(START_TIME)
                 .setEnd(END_TIME);

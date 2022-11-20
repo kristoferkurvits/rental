@@ -36,10 +36,8 @@ public class RegistrationServiceImpl implements RegistrationService {
         userRepository.insert(userEntity);
 
         log.debug("Saved: {}", userEntity);
-
-        var response = new UserRegistrationResponse();
-        response.setUserId(userId);
-        return response;
+        return new UserRegistrationResponse()
+                .setUserId(userId);
     }
 
     private UserDatabaseObject createUser(UserRegistrationRequest userRegistrationRequest, String userId) {
