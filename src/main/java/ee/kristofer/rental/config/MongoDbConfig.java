@@ -8,13 +8,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
 
-
 @Configuration
-@PropertySource("classpath:application-localdev.properties")
-//TODO Can't detect correct properties file, find a solution
 public class MongoDbConfig extends AbstractMongoClientConfiguration {
     private static final Logger log = LogManager.getLogger(MongoDbConfig.class);
 
