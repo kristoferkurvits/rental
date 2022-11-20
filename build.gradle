@@ -79,7 +79,7 @@ tasks.integrationTest() {
 }
 
 dockerCompose {
-	useComposeFiles = ["docker-compose.infrastructure.yml"]
+	useComposeFiles = ["docker-compose.integrationTest.yml"]
 
 	isRequiredBy(project.tasks.integrationTest)
 }

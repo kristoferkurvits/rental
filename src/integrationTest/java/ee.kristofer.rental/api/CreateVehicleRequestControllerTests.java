@@ -1,7 +1,10 @@
 package ee.kristofer.rental.api;
 
 import ee.kristofer.rental.handler.AuthFilter;
-import ee.kristofer.rental.model.*;
+import ee.kristofer.rental.model.Coordinates;
+import ee.kristofer.rental.model.CreateVehicleRequest;
+import ee.kristofer.rental.model.UpdateVehicleRequest;
+import ee.kristofer.rental.model.VehicleResponse;
 import ee.kristofer.rental.util.MapperUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -19,7 +22,8 @@ import java.util.Objects;
 import java.util.UUID;
 
 import static ee.kristofer.rental.constants.Constants.*;
-import static ee.kristofer.rental.constants.TestConstants.*;
+import static ee.kristofer.rental.constants.TestConstants.APIKEY_FOR_USER_WITH_VEHICLE;
+import static ee.kristofer.rental.constants.TestConstants.VEHICLE_ID;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;

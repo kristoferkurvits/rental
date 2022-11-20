@@ -1,5 +1,4 @@
 version: '3.9'
-
 services:
   rental:
     container_name: rental
@@ -22,3 +21,29 @@ services:
       - mongodb_container
     networks:
       - rental-network
+
+  mongo-seed:
+    hostname: mongo-seed
+    container_name: mongo-seed
+    image: mongo-seed
+    build:
+      context: ./test-data
+      dockerfile: ./Dockerfile
+    depends_on:
+      - mongodb_container
+    networks:
+      - rental-network
+
+  mongodb_container:
+    hostname: mongodb_container
+    container_name: mongodb_container
+    image: mongo:6.0.3
+    restart: always
+    ports:
+      - 27017:27017
+    networks:
+      - rental-network
+
+networks:
+  rental-network:
+    name: rental-network

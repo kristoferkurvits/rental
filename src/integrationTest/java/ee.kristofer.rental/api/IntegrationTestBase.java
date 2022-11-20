@@ -15,8 +15,5 @@ import org.springframework.test.context.TestPropertySource;
 @SpringBootConfiguration
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestPropertySource(locations = "classpath:application-test.properties")
-/*
-    TODO Integration tests should be split from unit tests so that integration tests are not run on every build
- */
 public class IntegrationTestBase {
 }
