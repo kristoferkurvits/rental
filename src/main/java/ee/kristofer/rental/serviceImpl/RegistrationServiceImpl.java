@@ -9,6 +9,7 @@ import ee.kristofer.rental.repository.UserRepository;
 import ee.kristofer.rental.service.RegistrationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -21,6 +22,7 @@ public class RegistrationServiceImpl implements RegistrationService {
     private static final String ALREADY_REGISTERED_MESSAGE = "This user has already been registered";
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserRegistrationResponse register(User user) {
@@ -44,7 +46,7 @@ public class RegistrationServiceImpl implements RegistrationService {
         return new UserDatabaseObject()
             .setId(userId)
             .setEmail(user.getEmail())
-            .setPassword(user.getPassword()) //TODO ENCRYPT
+            .setPassword(passwordEncoder.encode(user.getPassword()))
             .setName(user.getName());
     }
 

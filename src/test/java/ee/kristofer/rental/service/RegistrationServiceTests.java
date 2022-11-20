@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
 import static ee.kristofer.rental.constants.TestConstants.*;
@@ -21,7 +22,9 @@ import static org.mockito.Mockito.when;
 public class RegistrationServiceTests {
 
     @Mock
-    UserRepository userRepository;
+    private UserRepository userRepository;
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     @InjectMocks
     RegistrationServiceImpl registrationService;
@@ -34,7 +37,7 @@ public class RegistrationServiceTests {
     @Test
     void successfulRegistration() {
         when(userRepository.findByEmail(any(String.class))).thenReturn(null);
-
+        when(passwordEncoder.encode(any(String.class))).thenReturn("$2a$10$ZLhnHxdpHETcxmtEStgpI./Ri1mksgJ9iDP36FmfMdYyVg9g0b2dq");
         var response = registrationService.register(createUser());
         assertNotNull(response.getUserId());
     }
