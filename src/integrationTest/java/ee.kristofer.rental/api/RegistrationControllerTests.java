@@ -1,9 +1,9 @@
 package ee.kristofer.rental.api;
 
+import ee.kristofer.rental.handler.AuthFilter;
 import ee.kristofer.rental.model.UserRegistrationRequest;
 import ee.kristofer.rental.model.UserRegistrationResponse;
 import ee.kristofer.rental.util.MapperUtil;
-import ee.kristofer.rental.handler.AuthFilter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -17,7 +17,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.util.Objects;
-import java.util.UUID;
 
 import static ee.kristofer.rental.constants.Constants.CONTENT_TYPE;
 import static ee.kristofer.rental.constants.Constants.CONTENT_TYPE_JSON;

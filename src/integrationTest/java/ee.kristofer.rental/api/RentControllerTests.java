@@ -1,7 +1,10 @@
 package ee.kristofer.rental.api;
 
 import ee.kristofer.rental.handler.AuthFilter;
-import ee.kristofer.rental.model.*;
+import ee.kristofer.rental.model.EndRentRequest;
+import ee.kristofer.rental.model.EndRentResponse;
+import ee.kristofer.rental.model.StartRentRequest;
+import ee.kristofer.rental.model.StartRentResponse;
 import ee.kristofer.rental.util.MapperUtil;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

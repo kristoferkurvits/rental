@@ -1,8 +1,8 @@
 version: '3.9'
 services:
   mongo-gui:
-    hostname: "mongo-gui"
-    container_name: "mongo-gui"
+    hostname: mongo-gui
+    container_name: mongo-gui
     image: ugleiton/mongo-gui
     restart: always
     ports:
@@ -15,8 +15,9 @@ services:
       - mongodb_container
 
   mongo-seed:
-    hostname: "mongo-seed"
-    container_name: "mongo-seed"
+    hostname: mongo-seed
+    container_name: mongo-seed
+    image: mongo-seed
     build:
       context: ./test-data
       dockerfile: ./Dockerfile
@@ -26,8 +27,8 @@ services:
       - rental-network
 
   mongodb_container:
-    hostname: "mongodb_container"
-    container_name: "mongodb_container"
+    hostname: mongodb_container
+    container_name: mongodb_container
     image: mongo:6.0.3
     restart: always
     ports:
