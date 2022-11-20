@@ -1,0 +1,22 @@
+version: '3.9'
+
+services:
+  rental:
+    container_name: rental
+    hostname: rental
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      - server.port=8081
+      - server.servlet.context-path=/rental
+      - spring.mvc.pathmatch.matching-strategy=ant_path_matcher
+      - mongodb.database.table=rental
+      - mongodb.connection.string=mongodb://mongodb_container:27017/
+    restart: on-failure
+    depends_on:
+      - mongodb_container
+    networks:
+      - rental-network

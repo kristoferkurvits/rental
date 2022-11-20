@@ -2,11 +2,12 @@ package ee.kristofer.rental.controller;
 
 import ee.kristofer.rental.model.UpdateVehicleRequest;
 import ee.kristofer.rental.model.VehicleResponse;
-import ee.kristofer.rental.model.Vehicle;
+import ee.kristofer.rental.model.CreateVehicleRequest;
 import ee.kristofer.rental.serviceImpl.VehicleServiceImpl;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -25,12 +26,13 @@ public class VehicleController {
 
     private final VehicleServiceImpl vehicleService;
 
-    @PostMapping("/vehicle")
-    public ResponseEntity<VehicleResponse> createVehicle(@Valid @RequestBody Vehicle vehicle) {
-        return ResponseEntity.ok(vehicleService.createVehicle(vehicle));
+    @PostMapping(value="/vehicle", consumes=MediaType.APPLICATION_JSON_VALUE)
+
+    public ResponseEntity<VehicleResponse> createVehicle(@Valid @RequestBody CreateVehicleRequest createVehicleRequest) {
+        return ResponseEntity.ok(vehicleService.createVehicle(createVehicleRequest));
     }
 
-    @PutMapping("/vehicle")
+    @PutMapping(value="/vehicle", consumes=MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<VehicleResponse> updateVehicle(@Valid @RequestBody UpdateVehicleRequest vehicle) {
         return ResponseEntity.ok(vehicleService.updateVehicle(vehicle));
     }

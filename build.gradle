@@ -16,7 +16,7 @@ plugins {
 }
 apply plugin: 'docker-compose'
 group = 'ee.kristofer'
-version = '0.0.1-SNAPSHOT'
+version = '1.0'
 sourceCompatibility = JavaVersion.VERSION_17
 
 configurations {
@@ -86,4 +86,8 @@ dockerCompose {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+jar {
+	enabled = false
 }

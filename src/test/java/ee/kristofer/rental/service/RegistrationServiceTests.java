@@ -1,7 +1,7 @@
 package ee.kristofer.rental.service;
 
 import ee.kristofer.rental.exception.UnprocessableEntityException;
-import ee.kristofer.rental.model.User;
+import ee.kristofer.rental.model.UserRegistrationRequest;
 import ee.kristofer.rental.model.database.UserDatabaseObject;
 import ee.kristofer.rental.repository.UserRepository;
 import ee.kristofer.rental.serviceImpl.RegistrationServiceImpl;
@@ -48,8 +48,8 @@ public class RegistrationServiceTests {
         assertThrows(UnprocessableEntityException.class, () -> registrationService.register(createUser()));
     }
 
-    private User createUser() {
-        return new User()
+    private UserRegistrationRequest createUser() {
+        return new UserRegistrationRequest()
                 .setEmail(EMAIL)
                 .setPassword(PASSWORD)
                 .setName(NAME);

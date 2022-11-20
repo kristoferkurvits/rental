@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class VehicleControllerTests extends IntegrationTestBase {
+public class CreateVehicleRequestControllerTests extends IntegrationTestBase {
     private static final String VEHICLE_PATH = "/vehicle";
     private final MapperUtil mapperUtil = MapperUtil.getInstance();
 
@@ -77,8 +77,8 @@ public class VehicleControllerTests extends IntegrationTestBase {
                         .setLatitude(3.20));
     }
 
-    private Vehicle createVehicle() {
-        return new Vehicle()
+    private CreateVehicleRequest createVehicle() {
+        return new CreateVehicleRequest()
             .setStateOfCharge(100)
             .setCoordinates(
                 new Coordinates()
@@ -87,12 +87,12 @@ public class VehicleControllerTests extends IntegrationTestBase {
             );
     }
 
-    private MvcResult performPostRequest(Vehicle vehicle, ResultMatcher resultMatcher) throws Exception {
+    private MvcResult performPostRequest(CreateVehicleRequest createVehicleRequest, ResultMatcher resultMatcher) throws Exception {
         return this.mockMvc.perform(post(contextPath + VEHICLE_PATH)
             .contextPath(contextPath)
             .header(CONTENT_TYPE, CONTENT_TYPE_JSON)
             .header(AUTHORIZATION, APIKEY_FOR_USER_WITH_VEHICLE)
-            .content(mapperUtil.objectToJson(vehicle)))
+            .content(mapperUtil.objectToJson(createVehicleRequest)))
             .andDo(print()).andExpect(resultMatcher)
             .andReturn();
     }

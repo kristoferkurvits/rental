@@ -4,7 +4,7 @@ import ee.kristofer.rental.exception.NotFoundException;
 import ee.kristofer.rental.model.Coordinates;
 import ee.kristofer.rental.model.VehicleResponse;
 import ee.kristofer.rental.model.UpdateVehicleRequest;
-import ee.kristofer.rental.model.Vehicle;
+import ee.kristofer.rental.model.CreateVehicleRequest;
 import ee.kristofer.rental.model.database.VehicleDatabaseObject;
 import ee.kristofer.rental.repository.VehicleRepository;
 import ee.kristofer.rental.service.VehicleService;
@@ -22,9 +22,9 @@ public class VehicleServiceImpl implements VehicleService {
     private final VehicleRepository vehicleRepository;
 
     @Override
-    public VehicleResponse createVehicle(Vehicle vehicle) {
+    public VehicleResponse createVehicle(CreateVehicleRequest createVehicleRequest) {
         var vehicleId = UUID.randomUUID().toString();
-        vehicleRepository.save(createVehicleEntity(vehicle, vehicleId));
+        vehicleRepository.save(createVehicleEntity(createVehicleRequest, vehicleId));
         return new VehicleResponse()
                 .setVehicleId(vehicleId);
     }
@@ -60,10 +60,10 @@ public class VehicleServiceImpl implements VehicleService {
                 .setCoordinates(Objects.nonNull(coordinates) ? coordinates : existingVehicle.getCoordinates());
     }
 
-    private VehicleDatabaseObject createVehicleEntity(Vehicle vehicle, String vehicleId) {
+    private VehicleDatabaseObject createVehicleEntity(CreateVehicleRequest createVehicleRequest, String vehicleId) {
         return new VehicleDatabaseObject()
                 .setId(vehicleId)
-                .setCoordinates(vehicle.getCoordinates())
-                .setStateOfCharge(vehicle.getStateOfCharge());
+                .setCoordinates(createVehicleRequest.getCoordinates())
+                .setStateOfCharge(createVehicleRequest.getStateOfCharge());
     }
 }

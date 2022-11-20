@@ -11,14 +11,17 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.ThreadContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import javax.validation.constraints.NotNull;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -34,12 +37,28 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     private static String convertValidationMessage(FieldError fieldError) {
         return switch (fieldError.getCode() == null ? "" : fieldError.getCode()) {
-            case "NotNull", "NotBlank", "NotEmpty" -> fieldError.getField() + "REQUIRED";
-            case "Max" -> fieldError.getField() + "_INVALID_MAX";
-            case "MIN" -> fieldError.getField() + "_INVALID_MIN";
-            case "PATTERN", "Email" -> fieldError.getField() + "_INVALID_PATTERN";
-            default -> fieldError.getField() + "INVALID";
+            case "NotNull", "NotBlank", "NotEmpty" -> fieldError.getField() + "_required";
+            case "Max" -> fieldError.getField() + "_invalid_max";
+            case "MIN" -> fieldError.getField() + "_invalid_min";
+            case "PATTERN", "Email" -> fieldError.getField() + "_invalid_pattern";
+            default -> fieldError.getField() + "_invalid";
         };
+    }
+
+    @NotNull
+    @Override
+    public ResponseEntity<Object> handleMethodArgumentNotValid(
+            @NotNull MethodArgumentNotValidException ex,
+            @NotNull HttpHeaders headers, @NotNull HttpStatus status, @NotNull WebRequest request) {
+        return handleInvalidDataException(ex);
+    }
+
+    private ResponseEntity<Object> handleInvalidDataException(Exception ex) {
+        return handleInvalidDataException(HttpStatus.UNPROCESSABLE_ENTITY, ex);
+    }
+
+    ResponseEntity<Object> handleInvalidDataException(final HttpStatus httpStatus, final Exception ex) {
+        return Response.nok(httpStatus, createErrorResponse(ex, RestErrorType.INVALID_REQUEST));
     }
 
     @ExceptionHandler(UnprocessableEntityException.class)

@@ -1,9 +1,9 @@
 package ee.kristofer.rental.api;
 
+import ee.kristofer.rental.model.UserRegistrationRequest;
 import ee.kristofer.rental.model.UserRegistrationResponse;
 import ee.kristofer.rental.util.MapperUtil;
 import ee.kristofer.rental.handler.AuthFilter;
-import ee.kristofer.rental.model.User;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -54,38 +54,37 @@ public class RegistrationControllerTests extends IntegrationTestBase {
 
     @Test
     void registerNewUser() throws Exception {
-        var mvcResult = performPostRequest(createUser(UUID.randomUUID().toString()), status().isOk());
+        var mvcResult = performPostRequest(createUser("heya@gmail.com"), status().isOk());
         var response = mapperUtil.jsonToObject(mvcResult.getResponse().getContentAsString(), UserRegistrationResponse.class);
         Assertions.assertTrue(Objects.nonNull(response.getUserId()));
     }
 
     @Test
     void registerSameUserTwice() throws Exception {
-        var userId = UUID.randomUUID().toString();
-        performPostRequest(createUser(userId), status().isOk());
-        performPostRequest(createUser(userId), status().isUnprocessableEntity());
+        var validEmail = "validemail@hotmail.com";
+        performPostRequest(createUser(validEmail), status().isOk());
+        performPostRequest(createUser(validEmail), status().isUnprocessableEntity());
     }
 
     @Test
     void invalidEmailOnRegistration() throws Exception {
-        var userId = UUID.randomUUID().toString();
-        var user = createUser(userId);
+        var user = createUser("Dumbledore@hot.ee");
         user.setEmail("");
-        performPostRequest(user, status().isBadRequest());
+        performPostRequest(user, status().isUnprocessableEntity());
     }
 
-    private MvcResult performPostRequest(User user, ResultMatcher resultMatcher) throws Exception {
+    private MvcResult performPostRequest(UserRegistrationRequest userRegistrationRequest, ResultMatcher resultMatcher) throws Exception {
         return this.mockMvc.perform(post(contextPath + REGISTRATION_PATH)
             .contextPath(contextPath)
             .header(CONTENT_TYPE, CONTENT_TYPE_JSON)
-            .content(mapperUtil.objectToJson(user)))
+            .content(mapperUtil.objectToJson(userRegistrationRequest)))
         .andDo(print()).andExpect(resultMatcher)
         .andReturn();
     }
 
-    private User createUser(String random) {
-        var user = new User();
-        user.setEmail(random + "@hot.ee");
+    private UserRegistrationRequest createUser(String email) {
+        var user = new UserRegistrationRequest();
+        user.setEmail(email);
         user.setName("name");
         user.setPassword("123456789");
         return user;

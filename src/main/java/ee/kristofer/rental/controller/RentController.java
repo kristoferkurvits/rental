@@ -5,6 +5,7 @@ import ee.kristofer.rental.serviceImpl.RentServiceImpl;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,12 +25,12 @@ public class RentController {
 
     private final RentServiceImpl rentService;
 
-    @PostMapping("/start")
+    @PostMapping(value="/start", consumes= MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<StartRentResponse> startRent(@Valid @RequestBody StartRentRequest startRentRequest) {
         return ResponseEntity.ok(rentService.startRent(startRentRequest));
     }
 
-    @PostMapping("/end")
+    @PostMapping(value="/end", consumes=MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<EndRentResponse> endRent(@Valid @RequestBody EndRentRequest endRentRequest) {
         return ResponseEntity.ok(rentService.endRent(endRentRequest));
     }
