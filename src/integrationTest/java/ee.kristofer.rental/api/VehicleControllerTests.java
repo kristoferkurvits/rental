@@ -1,10 +1,12 @@
 package ee.kristofer.rental.api;
 
+import ee.kristofer.rental.constants.EntityType;
 import ee.kristofer.rental.handler.AuthFilter;
 import ee.kristofer.rental.model.Coordinates;
 import ee.kristofer.rental.model.CreateVehicleRequest;
 import ee.kristofer.rental.model.UpdateVehicleRequest;
 import ee.kristofer.rental.model.VehicleResponse;
+import ee.kristofer.rental.repository.VehicleRepository;
 import ee.kristofer.rental.util.MapperUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -24,12 +26,14 @@ import java.util.UUID;
 import static ee.kristofer.rental.constants.Constants.*;
 import static ee.kristofer.rental.constants.TestConstants.APIKEY_FOR_USER_WITH_VEHICLE;
 import static ee.kristofer.rental.constants.TestConstants.VEHICLE_ID;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class CreateVehicleRequestControllerTests extends IntegrationTestBase {
+public class VehicleControllerTests extends IntegrationTestBase {
     private static final String VEHICLE_PATH = "/vehicle";
     private final MapperUtil mapperUtil = MapperUtil.getInstance();
 
@@ -38,6 +42,9 @@ public class CreateVehicleRequestControllerTests extends IntegrationTestBase {
 
     @Autowired
     AuthFilter authFilter;
+
+    @Autowired
+    VehicleRepository vehicleRepository;
 
     @Autowired
     private WebApplicationContext webApplicationContext;
@@ -57,13 +64,31 @@ public class CreateVehicleRequestControllerTests extends IntegrationTestBase {
         var mvcResult = performPostRequest(createVehicle(), status().isOk());
         var response = mapperUtil.jsonToObject(mvcResult.getResponse().getContentAsString(), VehicleResponse.class);
         Assertions.assertTrue(Objects.nonNull(response.getVehicleId()));
+        var vehicle = vehicleRepository.findById(response.getVehicleId()).get();
+        assertEquals(100, vehicle.getStateOfCharge());
+        assertEquals(
+                new Coordinates()
+                    .setLongitude(25.44)
+                    .setLatitude(30.20),
+                vehicle.getCoordinates()
+        );
+        assertNotNull(vehicle.getCreatedAt());
+        assertEquals(EntityType.VEHICLE, vehicle.getType());
     }
 
     @Test
     void updateVehicle() throws Exception {
         var mvcResult = performPutRequest(createUpdateVehicleRequest(), status().isOk());
         var response = mapperUtil.jsonToObject(mvcResult.getResponse().getContentAsString(), VehicleResponse.class);
-        Assertions.assertEquals(VEHICLE_ID, response.getVehicleId());
+        assertEquals(VEHICLE_ID, response.getVehicleId());
+        var vehicle = vehicleRepository.findById(response.getVehicleId()).get();
+        assertEquals(50, vehicle.getStateOfCharge());
+        assertEquals(
+                new Coordinates()
+                    .setLongitude(5.44)
+                    .setLatitude(3.20),
+                vehicle.getCoordinates());
+        assertEquals(EntityType.VEHICLE, vehicle.getType());
     }
 
     @Test

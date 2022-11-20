@@ -11,7 +11,7 @@ public class TestConstants {
     public static final String RESERVATION_ID = "4cd44bf0-2222-2222-2222-14b62a7688f3";
     public static final String USER_ID_WITHOUT_VEHICLE = "96fc87ad-65f4-4469-93e0-e627078f2482";
 
-    public static final String ONGOING_RESERVATION_ID_2 = "5944af16-6868-11ed-9022-0242ac120002";
+    public static final String ONGOING_RESERVATION_ID_2 = "2afd66e2-68ff-11ed-9022-0242ac120002";
     public static final String VEHICLE_ID_2 = "5944ad54-6868-11ed-9022-0242ac120002";
     public static final String USER_ID_WITH_VEHICLE_2 = "5944a73c-6868-11ed-9022-0242ac120002";
 

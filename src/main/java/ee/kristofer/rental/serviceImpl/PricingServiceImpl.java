@@ -1,5 +1,6 @@
 package ee.kristofer.rental.serviceImpl;
 
+import ee.kristofer.rental.exception.RentalException;
 import ee.kristofer.rental.service.PricingService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,9 @@ public class PricingServiceImpl implements PricingService {
 
     @Override
     public BigDecimal calculatePrice(Instant start, Instant end) {
+        if (end.isBefore(start)) {
+            throw new RentalException("End time can not be before start time");
+        }
         BigDecimal duration = BigDecimal.valueOf(Duration.between(start, end).toSeconds());
         BigDecimal minutes = duration.divide(ONE_MINUTE, RoundingMode.DOWN);
         BigDecimal seconds = duration.remainder(ONE_MINUTE);
