@@ -14,9 +14,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Base64;
+import java.util.UUID;
 
-import static ee.kristofer.rental.constants.Constants.AUTHORIZATION;
-import static ee.kristofer.rental.constants.Constants.USER_ID_PARAM;
+import static ee.kristofer.rental.constants.Constants.*;
 
 @RequiredArgsConstructor
 @Component
@@ -33,6 +33,8 @@ public class AuthFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        ThreadContext.put(REQUEST_ID, UUID.randomUUID().toString());
+
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
 

@@ -2,6 +2,7 @@ package ee.kristofer.rental.handler;
 
 import ee.kristofer.rental.constants.RestErrorType;
 import ee.kristofer.rental.exception.AuthorizationException;
+import ee.kristofer.rental.exception.NotAcceptableException;
 import ee.kristofer.rental.exception.NotFoundException;
 import ee.kristofer.rental.exception.UnprocessableEntityException;
 import ee.kristofer.rental.model.ErrorResponse;
@@ -56,6 +57,11 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return handleException(HttpStatus.NOT_FOUND, ex);
     }
 
+    @ExceptionHandler(NotAcceptableException.class)
+    protected ResponseEntity<Object> handleNotFoundException(final NotAcceptableException ex) {
+        return Response.nok(HttpStatus.NOT_ACCEPTABLE, createErrorResponse(ex));
+    }
+
     private ResponseEntity<Object> handleException(HttpStatus httpStatus, final Exception ex) {
         if (LOG_ERROR_STATUSES.contains(httpStatus)) {
             log.error(ex.getMessage(), ex);
@@ -73,6 +79,16 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         RestErrorType restErrorType = Objects.nonNull(ex.getRestErrorType()) ?
                 ex.getRestErrorType() : RestErrorType.INVALID_REQUEST;
         return createErrorResponse(ex, restErrorType);
+    }
+
+    private ErrorResponse createErrorResponse(final NotAcceptableException ex) {
+        var restErrorType = Objects.nonNull(ex.getRestErrorType()) ?
+                ex.getRestErrorType() : RestErrorType.INVALID_REQUEST;
+        var errorResponse = new ErrorResponse();
+        errorResponse.setRequestId(ThreadContext.get(REQUEST_ID));
+        errorResponse.setRestErrorType(restErrorType);
+        errorResponse.setErrorCodes(Collections.singletonList(ex.getMessage()));
+        return errorResponse;
     }
 
     private ErrorResponse createErrorResponse(Exception ex, RestErrorType restErrorType) {

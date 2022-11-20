@@ -17,21 +17,17 @@ services:
     build: ./test-data
     depends_on:
       - mongodb_container
+      - mongo-gui
     networks:
       - rental-network
 
   mongodb_container:
     image: mongo:6.0.3
+    restart: always
     ports:
       - 27017:27017
-    volumes:
-      - rental-db:/data/db
     networks:
       - rental-network
-
-volumes:
-  rental-db:
-    name: rental-db
 
 networks:
   rental-network:

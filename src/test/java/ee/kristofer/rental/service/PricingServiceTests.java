@@ -3,9 +3,8 @@ package ee.kristofer.rental.service;
 import ee.kristofer.rental.serviceImpl.PricingServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
@@ -13,11 +12,10 @@ import java.time.Instant;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@ActiveProfiles("localdev")
-@SpringBootTest(classes = PricingServiceImpl.class)
+@ActiveProfiles("test")
 public class PricingServiceTests {
 
-    @Autowired
+    @InjectMocks
     PricingServiceImpl pricingService;
 
     @BeforeEach

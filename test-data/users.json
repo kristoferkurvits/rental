@@ -2,7 +2,7 @@
   {
     "_id": "6718c46b-0f66-4ea5-a412-d3facbedeb3f",
     "type": "USER",
-    "email": "9496541c-69f2-4411-a7fa-a18446d45475@hot.ee",
+    "email": "weirdemail@hot.ee",
     "password": "123456789",
     "name": "name",
     "vehicle": {
@@ -34,6 +34,16 @@
     "_id": "96fc87ad-65f4-4469-93e0-e627078f2482",
     "type": "USER",
     "email": "email@hot.ee",
+    "password": "123456789",
+    "name": "name",
+    "createdAt": "2022-11-19T13:08:42.073Z",
+    "modifiedAt": "2022-11-19T13:24:41.099Z",
+    "_class": "ee.kristofer.rental.model.database.UserDatabaseObject"
+  },
+  {
+    "_id": "5944a73c-6868-11ed-9022-0242ac120002",
+    "type": "USER",
+    "email": "asdd@hot.ee",
     "password": "123456789",
     "name": "name",
     "createdAt": "2022-11-19T13:08:42.073Z",

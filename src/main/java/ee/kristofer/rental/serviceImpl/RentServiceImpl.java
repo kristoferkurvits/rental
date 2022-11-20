@@ -1,7 +1,9 @@
 package ee.kristofer.rental.serviceImpl;
 
 import ee.kristofer.rental.exception.AuthorizationException;
+import ee.kristofer.rental.exception.NotAcceptableException;
 import ee.kristofer.rental.exception.NotFoundException;
+import ee.kristofer.rental.exception.RentalException;
 import ee.kristofer.rental.model.*;
 import ee.kristofer.rental.model.database.UserDatabaseObject;
 import ee.kristofer.rental.model.database.VehicleDatabaseObject;
@@ -14,6 +16,7 @@ import org.apache.logging.log4j.ThreadContext;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.IllegalFormatCodePointException;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -38,16 +41,25 @@ public class RentServiceImpl implements RentService {
         if (optionalVehicle.isEmpty()) {
             throw new NotFoundException("Invalid vehicle");
         }
+        var vehicle = optionalVehicle.get();
+        if (vehicle.isInUse()) {
+            throw new NotAcceptableException("Vehicle already in use");
+        }
+
         var optionalUser = userRepository.findById(startRentRequest.getUserId());
         if (optionalUser.isEmpty()) {
             throw new NotFoundException("Invalid user");
         }
 
-        var vehicle = optionalVehicle.get();
+        var user = optionalUser.get();
+        if (Objects.nonNull(user.getOngoingReservation())) {
+            throw new NotAcceptableException("User has already ongoing reservation");
+        }
+
+
         vehicle.setUserId(startRentRequest.getUserId());
         vehicle.setInUse(true);
 
-        var user = optionalUser.get();
         var reservation = createReservation(vehicle);
 
         user.setOngoingReservation(reservation);
@@ -70,13 +82,20 @@ public class RentServiceImpl implements RentService {
         if (optionalVehicle.isEmpty()) {
             throw new NotFoundException("Invalid vehicle");
         }
+        var vehicle = optionalVehicle.get();
+        if (!vehicle.isInUse()) {
+            throw new NotAcceptableException("Vehicle already stopped");
+        }
+
         var optionalUser = userRepository.findById(endRentRequest.getUserId());
         if (optionalUser.isEmpty()) {
             throw new NotFoundException("Invalid user");
         }
-
-        var vehicle = optionalVehicle.get();
         var user = optionalUser.get();
+        if (!userAndVehicleMatch(user.getId(), vehicle.getUserId())) {
+            throw new NotAcceptableException("User can only end their reservation");
+        }
+
         var endTime = Instant.now();
         var ongoingReservation = user.getOngoingReservation();
         var cost = pricingService.calculatePrice(ongoingReservation.getStart(), endTime);
@@ -93,6 +112,11 @@ public class RentServiceImpl implements RentService {
                 .setCost(cost)
                 .setReservationId(ongoingReservation.getId());
     }
+
+    private boolean userAndVehicleMatch(String userId, String userIdOnVehicle) {
+        return userId.equals(userIdOnVehicle);
+    }
+
     private void resetUserReservation(UserDatabaseObject user, Reservation ongoingReservation) {
         var previousReservations = user.getPreviousReservations();
         if (Objects.nonNull(previousReservations)) {

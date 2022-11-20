@@ -21,6 +21,7 @@ public class RegistrationServiceImpl implements RegistrationService {
     private static final String ALREADY_REGISTERED_MESSAGE = "This user has already been registered";
 
     private final UserRepository userRepository;
+
     @Override
     public UserRegistrationResponse register(User user) {
         if (userAlreadyExists(user.getEmail())) {
