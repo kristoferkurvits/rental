@@ -73,7 +73,6 @@ public class AuthFilter implements Filter {
     }
 
     private boolean unauthorizedPath(HttpServletRequest req) {
-
         return req.getRequestURI().startsWith(contextPath + REGISTRATION_PATH)
                 || req.getRequestURI().contains("swagger") || req.getRequestURI().contains("v2/api-docs");
     }

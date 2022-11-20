@@ -1,0 +1,28 @@
+[
+  {
+    "_id": "451fc576-2f46-4eeb-ba3b-8a229c379b7c",
+    "active": "true",
+    "userId": "6718c46b-0f66-4ea5-a412-d3facbedeb3f",
+    "start": "2022-11-19T13:24:41.099Z",
+    "startCoordinates": {
+      "longitude": 5.44,
+      "latitude": 3.2
+    },
+    "createdAt": "2022-11-19T13:08:42.073Z",
+    "modifiedAt": "2022-11-19T13:24:41.099Z",
+    "_class": "ee.kristofer.rental.model.database.ReservationDatabaseObject"
+  },
+  {
+    "_id": "2afd66e2-68ff-11ed-9022-0242ac120002",
+    "active": "false",
+    "userId": "6718c46b-0f66-4ea5-a412-d3facbedeb3f",
+    "start": "2022-11-19T13:24:41.099Z",
+    "startCoordinates": {
+      "longitude": 51.44,
+      "latitude": 31.2
+    },
+    "createdAt": "2022-11-19T13:08:42.073Z",
+    "modifiedAt": "2022-11-19T13:24:41.099Z",
+    "_class": "ee.kristofer.rental.model.database.ReservationDatabaseObject"
+  }
+]

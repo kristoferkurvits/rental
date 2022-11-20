@@ -21,6 +21,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 import static ee.kristofer.rental.constants.Constants.USER_ID_PARAM;
+import static ee.kristofer.rental.util.ValidationUtil.validUser;
 
 @Service
 @RequiredArgsConstructor
@@ -132,11 +133,6 @@ public class RentServiceImpl implements RentService {
         vehicle.setInUse(false);
         vehicleRepository.save(vehicle);
     }
-
-    private boolean validUser(String userId) {
-        return userId.equals(ThreadContext.get(USER_ID_PARAM));
-    }
-
 
     private Reservation createReservation(VehicleDatabaseObject vehicle) {
         return new Reservation()
