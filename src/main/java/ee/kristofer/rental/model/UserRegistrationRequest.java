@@ -5,25 +5,25 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import org.springframework.lang.Nullable;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 
-@Data
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @Accessors(chain = true)
-public class Coordinates {
+@Data
+public class UserRegistrationRequest {
 
-    @Min(-180)
-    @Max(180)
-    @Nullable
+    @NotEmpty
+    @Email
     @ApiModelProperty(required = true)
-    private Double longitude;
-
-    @Min(-90)
-    @Max(90)
-    @Nullable
+    private String email;
+    @NotEmpty
+    @Size(min = 8, max = 64)
     @ApiModelProperty(required = true)
-    private Double latitude;
+    private String password;
+    @NotEmpty
+    @ApiModelProperty(required = true)
+    private String name;
 }

@@ -13,6 +13,8 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import java.time.Instant;
 
 @Data
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
@@ -21,6 +23,9 @@ public class VehicleDatabaseObject {
 
     public VehicleDatabaseObject() {
         this.type = EntityType.VEHICLE;
+        var time = Instant.now();
+        this.createdAt = time;
+        this.modifiedAt = time;
     }
 
     @Id
@@ -41,9 +46,10 @@ public class VehicleDatabaseObject {
     private Coordinates coordinates;
 
     private boolean inUse;
-    //Vehicle is in use if a user has been assigned to it
-    public boolean isInUse() {
-        return StringUtil.isNullOrEmpty(this.userId);
-    }
+
+    @NotNull
+    private Instant createdAt;
+    @NotNull
+    private Instant modifiedAt;
 
 }

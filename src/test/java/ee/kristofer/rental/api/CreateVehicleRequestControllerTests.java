@@ -15,8 +15,6 @@ import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -27,9 +25,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class VehicleControllerTests extends IntegrationTestBase {
+public class CreateVehicleRequestControllerTests extends IntegrationTestBase {
     private static final String VEHICLE_PATH = "/vehicle";
-    private static final String APIKEY_FOR_EXISTING_USER = new String(Base64.getEncoder().encode(USER_ID.getBytes(StandardCharsets.UTF_8)));
     private final MapperUtil mapperUtil = MapperUtil.getInstance();
 
     @Value("${server.servlet.context-path}")
@@ -67,20 +64,21 @@ public class VehicleControllerTests extends IntegrationTestBase {
 
     @Test
     void updateVehicleNotFound() throws Exception {
-        performPutRequest(createUpdateVehicleRequest(), status().isNotFound());
+        performPutRequest(createUpdateVehicleRequest()
+                .setId(UUID.randomUUID().toString()), status().isNotFound());
     }
 
     private UpdateVehicleRequest createUpdateVehicleRequest() {
         return new UpdateVehicleRequest()
-                .setId(UUID.randomUUID().toString())
+                .setId(VEHICLE_ID)
                 .setStateOfCharge(50)
                 .setCoordinates(new Coordinates()
                         .setLongitude(5.44)
                         .setLatitude(3.20));
     }
 
-    private Vehicle createVehicle() {
-        return new Vehicle()
+    private CreateVehicleRequest createVehicle() {
+        return new CreateVehicleRequest()
             .setStateOfCharge(100)
             .setCoordinates(
                 new Coordinates()
@@ -88,12 +86,13 @@ public class VehicleControllerTests extends IntegrationTestBase {
                     .setLatitude(30.20)
             );
     }
-    private MvcResult performPostRequest(Vehicle vehicle, ResultMatcher resultMatcher) throws Exception {
+
+    private MvcResult performPostRequest(CreateVehicleRequest createVehicleRequest, ResultMatcher resultMatcher) throws Exception {
         return this.mockMvc.perform(post(contextPath + VEHICLE_PATH)
             .contextPath(contextPath)
             .header(CONTENT_TYPE, CONTENT_TYPE_JSON)
-            .header(AUTHORIZATION, APIKEY_FOR_EXISTING_USER)
-            .content(mapperUtil.objectToJson(vehicle)))
+            .header(AUTHORIZATION, APIKEY_FOR_USER_WITH_VEHICLE)
+            .content(mapperUtil.objectToJson(createVehicleRequest)))
             .andDo(print()).andExpect(resultMatcher)
             .andReturn();
     }
@@ -102,7 +101,7 @@ public class VehicleControllerTests extends IntegrationTestBase {
         return this.mockMvc.perform(put(contextPath + VEHICLE_PATH)
             .contextPath(contextPath)
             .header(CONTENT_TYPE, CONTENT_TYPE_JSON)
-            .header(AUTHORIZATION, APIKEY_FOR_EXISTING_USER)
+            .header(AUTHORIZATION, APIKEY_FOR_USER_WITH_VEHICLE)
             .content(mapperUtil.objectToJson(vehicle)))
             .andDo(print()).andExpect(resultMatcher)
             .andReturn();

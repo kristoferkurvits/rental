@@ -5,17 +5,14 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import javax.validation.constraints.*;
+import java.math.BigDecimal;
+import java.time.Instant;
 
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @Data
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @Accessors(chain = true)
-public class Vehicle {
-    private String id;
-
-    @Max(100)
-    @Min(0)
-    private int stateOfCharge;
-
-    private Coordinates coordinates;
+public class EndRentResponse {
+    private String reservationId;
+    private BigDecimal cost;
+    private Instant endTime;
 }

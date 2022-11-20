@@ -5,25 +5,18 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import org.springframework.lang.Nullable;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
+import javax.validation.constraints.*;
 
-@Data
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+@Data
 @Accessors(chain = true)
-public class Coordinates {
+public class CreateVehicleRequest {
 
-    @Min(-180)
-    @Max(180)
-    @Nullable
+    @Max(100)
+    @Min(0)
     @ApiModelProperty(required = true)
-    private Double longitude;
-
-    @Min(-90)
-    @Max(90)
-    @Nullable
+    private int stateOfCharge;
     @ApiModelProperty(required = true)
-    private Double latitude;
+    private Coordinates coordinates;
 }

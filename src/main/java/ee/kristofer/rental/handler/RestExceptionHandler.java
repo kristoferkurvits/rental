@@ -2,6 +2,7 @@ package ee.kristofer.rental.handler;
 
 import ee.kristofer.rental.constants.RestErrorType;
 import ee.kristofer.rental.exception.AuthorizationException;
+import ee.kristofer.rental.exception.NotAcceptableException;
 import ee.kristofer.rental.exception.NotFoundException;
 import ee.kristofer.rental.exception.UnprocessableEntityException;
 import ee.kristofer.rental.model.ErrorResponse;
@@ -10,14 +11,17 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.ThreadContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import javax.validation.constraints.NotNull;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -33,12 +37,28 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     private static String convertValidationMessage(FieldError fieldError) {
         return switch (fieldError.getCode() == null ? "" : fieldError.getCode()) {
-            case "NotNull", "NotBlank", "NotEmpty" -> fieldError.getField() + "REQUIRED";
-            case "Max" -> fieldError.getField() + "_INVALID_MAX";
-            case "MIN" -> fieldError.getField() + "_INVALID_MIN";
-            case "PATTERN", "Email" -> fieldError.getField() + "_INVALID_PATTERN";
-            default -> fieldError.getField() + "INVALID";
+            case "NotNull", "NotBlank", "NotEmpty" -> fieldError.getField() + "_required";
+            case "Max" -> fieldError.getField() + "_invalid_max";
+            case "MIN" -> fieldError.getField() + "_invalid_min";
+            case "PATTERN", "Email" -> fieldError.getField() + "_invalid_pattern";
+            default -> fieldError.getField() + "_invalid";
         };
+    }
+
+    @NotNull
+    @Override
+    public ResponseEntity<Object> handleMethodArgumentNotValid(
+            @NotNull MethodArgumentNotValidException ex,
+            @NotNull HttpHeaders headers, @NotNull HttpStatus status, @NotNull WebRequest request) {
+        return handleInvalidDataException(ex);
+    }
+
+    private ResponseEntity<Object> handleInvalidDataException(Exception ex) {
+        return handleInvalidDataException(HttpStatus.UNPROCESSABLE_ENTITY, ex);
+    }
+
+    ResponseEntity<Object> handleInvalidDataException(final HttpStatus httpStatus, final Exception ex) {
+        return Response.nok(httpStatus, createErrorResponse(ex, RestErrorType.INVALID_REQUEST));
     }
 
     @ExceptionHandler(UnprocessableEntityException.class)
@@ -54,6 +74,11 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(NotFoundException.class)
     protected ResponseEntity<Object> handleNotFoundException(final NotFoundException ex) {
         return handleException(HttpStatus.NOT_FOUND, ex);
+    }
+
+    @ExceptionHandler(NotAcceptableException.class)
+    protected ResponseEntity<Object> handleNotFoundException(final NotAcceptableException ex) {
+        return Response.nok(HttpStatus.NOT_ACCEPTABLE, createErrorResponse(ex));
     }
 
     private ResponseEntity<Object> handleException(HttpStatus httpStatus, final Exception ex) {
@@ -73,6 +98,16 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         RestErrorType restErrorType = Objects.nonNull(ex.getRestErrorType()) ?
                 ex.getRestErrorType() : RestErrorType.INVALID_REQUEST;
         return createErrorResponse(ex, restErrorType);
+    }
+
+    private ErrorResponse createErrorResponse(final NotAcceptableException ex) {
+        var restErrorType = Objects.nonNull(ex.getRestErrorType()) ?
+                ex.getRestErrorType() : RestErrorType.INVALID_REQUEST;
+        var errorResponse = new ErrorResponse();
+        errorResponse.setRequestId(ThreadContext.get(REQUEST_ID));
+        errorResponse.setRestErrorType(restErrorType);
+        errorResponse.setErrorCodes(Collections.singletonList(ex.getMessage()));
+        return errorResponse;
     }
 
     private ErrorResponse createErrorResponse(Exception ex, RestErrorType restErrorType) {
